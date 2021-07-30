@@ -5,12 +5,11 @@ import {URI} from '../utils/constants'
 
 
 
-    function Job() {
-    
+    function Job() {   
         const [jobs, setJobs] = useState([])
+        const [searchName, setSearchName] = useState("");
 
  async function getJobs() {
-
 
 fetch("https://divercity-test.herokuapp.com/jobs")
   .then(response => response.json())
@@ -25,12 +24,43 @@ useEffect(() => {
    getJobs()
 }, [])
 
+        
+
+
+  let filteredJobs = jobs;
+  if (searchName) {
+    filteredJobs = jobs.filter((el) =>
+      el.title.includes(searchName)
+    );
+  }
 
         console.log(jobs)
-    return (
-    <>
+        return (
+        
+            <>
+                <div>
+                     <div className="search-options">
+        <form>
+          <fieldset>
+            <legend>Search name:</legend>
+            <label htmlFor="name-input">Name:</label>
+            <br />
+            <input
+              type="text"
+              className="name-input"
+              name="name"
+              required
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              
+            />
+           
+          </fieldset>
+        </form>
+      </div>
+                </div>
             <div>
-                {jobs.map(i => <JobList title={i.title} description={i.description} type={i.type} location={ i.location}/>)}
+                {filteredJobs.map(i => <JobList title={i.title} description={i.description} type={i.type} location={ i.location}/>)}
 
         </div>
 
