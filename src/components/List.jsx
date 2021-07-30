@@ -58,6 +58,7 @@ function List({
   location,
   skills_tag
 }) {
+  console.log("skills tag", skills_tag)
     
     return(
 
@@ -72,7 +73,7 @@ function List({
            
             {type}
             {location}
-            {skills_tag}
+          {skills_tag.map(i => <h1>{i}</h1>)}
 
             </div>
             

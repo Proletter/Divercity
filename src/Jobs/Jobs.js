@@ -15,7 +15,6 @@ fetch("https://divercity-test.herokuapp.com/jobs")
   .then(response => response.json())
     .then(result => {
         setJobs(result.jobs)
-      console.log(result)
   } )
   .catch(error => console.log('error', error));
     }
@@ -29,12 +28,19 @@ useEffect(() => {
 
   let filteredJobs = jobs;
   if (searchName) {
-    filteredJobs = jobs.filter((el) =>
-      el.title.includes(searchName)
-    );
+      filteredJobs = jobs.filter((el) => {
+          
+          return el.location?.includes(searchName) ||
+              el.title?.includes(searchName) ||
+              el.skills_tag?.join(',').includes(searchName)
+        
+    }) 
+    
+    
+      ;
   }
 
-        console.log(jobs)
+     
         return (
         
             <>
@@ -56,11 +62,11 @@ useEffect(() => {
             />
            
           </fieldset>
-        </form>
-      </div>
+         </form>
+              </div>
                 </div>
             <div>
-                {filteredJobs.map(i => <JobList title={i.title} description={i.description} type={i.type} location={ i.location}/>)}
+                    {filteredJobs.map(i => <JobList title={i.title} description={i.description} type={i.type} location={i.location} skills_tag={i.skills_tag}/>)}
 
         </div>
 
