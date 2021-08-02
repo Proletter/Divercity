@@ -1,5 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import {Link} from 'react-router-dom'
+import {useState} from 'react'
+import {URI} from '../utils/constants'
 
 
 
@@ -43,6 +46,10 @@ font-family: Arial, Helvetica, sans-serif;
     margin-top: 1em
 }
 
+.pop-up {
+  position: relative;
+  left: 300px
+}
 .job-description {
     margin-top: 1em;
     font-size: 1em;
@@ -62,10 +69,46 @@ function List({
   description,
   type,
   location,
-  skills_tag
+  skills_tag,
+  isAuthenticated,
+  jobId
 }) {
-  console.log("skills tag", skills_tag)
     
+const [displayResult, setDisplayResult] = useState(null)
+const [popUp, setPopUp] = useState(false)
+const token = localStorage.getItem('token')
+
+
+function applyToJob(){
+const myHeaders = new Headers();
+myHeaders.append("Authorization", token);
+myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+const urlencoded = new URLSearchParams();
+urlencoded.append("motivation", "I really want the job");
+urlencoded.append("cover_letter", "I am a good person");
+
+const requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: urlencoded
+
+};
+
+fetch(`${URI}/jobs/${jobId}/apply`, requestOptions)
+  .then(response => response.json())
+  .then(result =>{
+    setDisplayResult(result.message)
+    console.log(result.message)
+    setPopUp(true)
+    setTimeout(() => {
+       setPopUp(false)
+    }, 500);
+  } )
+  .catch(error => console.log('error', error));
+
+
+}
 
     return(
 
@@ -78,15 +121,18 @@ function List({
                 {/* dangerouslySetInnerHTML doesn't support nested tags hence stripping out html tags*/}
                      {description.replace( /(<([^>]+)>)/ig, '')}
                  </div>
+                 {popUp &&<div className="pop-up">{displayResult}</div>}
            
           {type}
            Location: {location}
           
           {skills_tag.map(i => <p>{i}</p>)}
+          {!isAuthenticated && "Sorry you can't apply for this job yet, you are not signed in please sign in first by clicking:"}
 
-          <button>
+          {isAuthenticated?<button disabled={popUp} onClick={(e)=>{ applyToJob(jobId)} }>
             Apply
-          </button>
+          </button >:
+          <Link to={`/signin`} activeClassName="active">Here</Link>}
 
             </div>
             

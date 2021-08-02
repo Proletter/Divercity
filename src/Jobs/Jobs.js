@@ -2,13 +2,14 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import JobList from "../components/List"
 import {URI} from '../utils/constants'
-
+import styled from 'styled-components'
+import "./Jobs.css"
 
 
     function Job() {   
         const [jobs, setJobs] = useState([])
         const [searchName, setSearchName] = useState("");
-
+       const isAuthenticated = localStorage.getItem('isAuthenticated')
  async function getJobs() {
 
 fetch(`${URI}/jobs`)
@@ -26,7 +27,7 @@ useEffect(() => {
   getJobs()
 }, [])
 
-        
+      
 
 
   let filteredJobs = jobs;
@@ -41,33 +42,33 @@ useEffect(() => {
     
   }
 
+  
      
         return (
         
             <>
-                <div>
-                     <div className="search-options">
-        <form>
-          <fieldset>
-            <legend>Search name:</legend>
-            <label htmlFor="name-input">Name:</label>
-            <br />
+                <div className="form-style">
+                    
+        <form >
+         
+            <p>Input your filter query</p>
+           
+          
             <input
               type="text"
               className="name-input"
               name="name"
-              required
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
               
             />
            
-          </fieldset>
+        
          </form>
-              </div>
+              
                 </div>
             <div>
-                    {filteredJobs.map(i => <JobList title={i.title} description={i.description} type={i.type} location={i.location} skills_tag={i.skills_tag}/>)}
+                    {filteredJobs.map(i => <JobList title={i.title} isAuthenticated={isAuthenticated} description={i.description} type={i.type} jobId={i.id} location={i.location} skills_tag={i.skills_tag}/>)}
 
         </div>
 

@@ -4,6 +4,8 @@ import {URI} from '../utils/constants'
 import { useEffect } from 'react'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
+import { Redirect } from "react-router-dom"
+
 
 
 
@@ -112,6 +114,7 @@ input {
 `
 
 const Signin = () => {
+	const [isAuth, setIsAuth] = useState(false)
 
 	function logInUser(values, setSubmitting, resetForm) {
 		
@@ -127,18 +130,16 @@ const Signin = () => {
             const isJson = response.headers.get('content-type')?.includes('application/json');
             const data = isJson && await response.json();
 
-            // check for error response
             if (!response.ok) {
                 const error = (data && data.message) || response.status;
                 return Promise.reject(error);
             }
-
-	//Using session storage as auth token never changes from the backend. Users should have to login after each browser referesh for this assessment.
-			sessionStorage.setItem('token', data.token)
-			let token = sessionStorage.getItem('token')
-			console.log(token)
+			localStorage.setItem('token', data.token)
+			localStorage.setItem('isAuthenticated', true)
+			setIsAuth(true)
 			resetForm(initialValues)
             setSubmitting(false)
+			
         })
 		.catch(error => {
 			console.error('There was an error!', error);
@@ -153,13 +154,13 @@ const Signin = () => {
      password: Yup.string().required('Password is required'),
     
  });
+ 
 
     return (
         
-
+		isAuth ? <Redirect to="/jobs" />:
         <Container>
-
-           
+  
         <div class="container" id="container">
         
                 <div class="form-container sign-in-container">
@@ -169,7 +170,7 @@ const Signin = () => {
         onSubmit={(values, { setSubmitting, resetForm }) => {
                             console.log(values)
                         
-                            logInUser(values, setSubmitting,resetForm)
+       logInUser(values, setSubmitting,resetForm)
                             
                             
                             
@@ -184,9 +185,10 @@ const Signin = () => {
          handleBlur,
          handleSubmit,
          isSubmitting,
-         /* and other goodies */
        }) => (
          <form onSubmit={handleSubmit}>
+		  <h1>Sign in</h1>
+            <span>You need an account to use this service</span>
            <input
            placeholder="Username"
              type="username"

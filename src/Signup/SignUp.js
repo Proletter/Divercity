@@ -118,8 +118,7 @@ const SignUp = () => {
 
 	
 	function registerUser(values, setSubmitting,resetForm) {
-		// e.preventDefault();
-		console.log("loggin user in")
+
 		
     const requestOptions = {
         method: 'POST',
@@ -133,8 +132,6 @@ const SignUp = () => {
         .then(async response => {
             const isJson = response.headers.get('content-type')?.includes('application/json');
             const data = isJson && await response.json();
-
-            // check for error response
             if (!response.ok) {
                 const error = (data && data.message) || response.status;
                 return Promise.reject(error);
@@ -192,9 +189,11 @@ const SignUp = () => {
          handleBlur,
          handleSubmit,
          isSubmitting,
-         /* and other goodies */
+    
        }) => (
          <form onSubmit={handleSubmit}>
+         <h1>Sign up</h1>
+            <span>You need an account to use this service</span>
            <input
            placeholder="Username"
              type="username"
