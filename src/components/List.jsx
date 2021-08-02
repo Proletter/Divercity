@@ -48,6 +48,12 @@ font-family: Arial, Helvetica, sans-serif;
     font-size: 1em;
     margin-bottom: 1em
 }
+
+button {
+  display: flex;
+  align-self: end;
+  bottom: 2em
+}
 `
 
 
@@ -60,6 +66,7 @@ function List({
 }) {
   console.log("skills tag", skills_tag)
     
+
     return(
 
         <Container>
@@ -67,13 +74,19 @@ function List({
                 <div className="title">
                     {title}
                 </div>
-                <div className="job-description">
-                     {description}
+          <div className="job-description">
+                {/* dangerouslySetInnerHTML doesn't support nested tags hence stripping out html tags*/}
+                     {description.replace( /(<([^>]+)>)/ig, '')}
                  </div>
            
-            {type}
-            {location}
-          {skills_tag.map(i => <h1>{i}</h1>)}
+          {type}
+           Location: {location}
+          
+          {skills_tag.map(i => <p>{i}</p>)}
+
+          <button>
+            Apply
+          </button>
 
             </div>
             

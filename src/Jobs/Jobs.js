@@ -11,16 +11,19 @@ import {URI} from '../utils/constants'
 
  async function getJobs() {
 
-fetch("https://divercity-test.herokuapp.com/jobs")
+fetch(`${URI}/jobs`)
   .then(response => response.json())
     .then(result => {
         setJobs(result.jobs)
   } )
   .catch(error => console.log('error', error));
-    }
+      }
+      
+  
+
 
 useEffect(() => {
-   getJobs()
+  getJobs()
 }, [])
 
         
@@ -36,8 +39,6 @@ useEffect(() => {
         
     }) 
     
-    
-      ;
   }
 
      

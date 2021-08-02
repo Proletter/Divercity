@@ -2,8 +2,8 @@ import React, {useState} from 'react'
 import styled from 'styled-components'
 import {URI} from '../utils/constants'
 import { useEffect } from 'react'
-import * as Yup from 'yup'
 import { Formik } from 'formik'
+import * as Yup from 'yup'
 
 
 
@@ -109,20 +109,27 @@ input {
     margin: 0 auto;
 }
 
+
+
+
 `
 
-const Signin = () => {
+const SignUp = () => {
 
-	function logInUser(values, setSubmitting, resetForm) {
+	
+	function registerUser(values, setSubmitting,resetForm) {
+		// e.preventDefault();
+		console.log("loggin user in")
 		
     const requestOptions = {
         method: 'POST',
         headers: { 
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer my-token'
         },
         body: JSON.stringify(values)
     };
-    fetch(`${URI}/login`, requestOptions)
+    fetch(`${URI}/register`, requestOptions)
         .then(async response => {
             const isJson = response.headers.get('content-type')?.includes('application/json');
             const data = isJson && await response.json();
@@ -133,11 +140,8 @@ const Signin = () => {
                 return Promise.reject(error);
             }
 
-	//Using session storage as auth token never changes from the backend. Users should have to login after each browser referesh for this assessment.
-			sessionStorage.setItem('token', data.token)
-			let token = sessionStorage.getItem('token')
-			console.log(token)
-			resetForm(initialValues)
+            console.log(data)
+            resetForm(initialValues)
             setSubmitting(false)
         })
 		.catch(error => {
@@ -145,13 +149,17 @@ const Signin = () => {
 		});
 	}
 
-    const initialValues = { username: '', password: ''}
+    const initialValues = { username: '', password: '', passwordConfirmation: '', name: '' }
 
     const DisplayingErrorMessagesSchema = Yup.object().shape({
    username: Yup.string()
+     .min(2, 'username too short!')
+     .max(50, 'username too Long!')
      .required('please input a username'),
-     password: Yup.string().required('Password is required'),
-    
+     password: Yup.string().min(8,"password should be at least 8 characters long").required('Password is required'),
+     passwordConfirmation: Yup.string()
+     .oneOf([Yup.ref('password'), null], 'Passwords must match!'),
+    name: Yup.string().required('please input your name')
  });
 
     return (
@@ -166,11 +174,11 @@ const Signin = () => {
                      <Formik
         initialValues={initialValues}
         validationSchema={DisplayingErrorMessagesSchema}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
+                        onSubmit={(values, { setSubmitting, resetForm }) => {
                             console.log(values)
                         
-                            logInUser(values, setSubmitting,resetForm)
-                            
+                            registerUser(values, setSubmitting, resetForm)
+                            resetForm(initialValues)
                             
                             
         
@@ -204,8 +212,25 @@ const Signin = () => {
              onBlur={handleBlur}
              value={values.password}
            />
-			{errors.password && touched.password && errors.password}
-            
+            {errors.password && touched.password && errors.password}
+            <input
+            type="password"
+            placeholder="Please re-enter password"
+             name="passwordConfirmation"
+             onChange={handleChange}
+             onBlur={handleBlur}
+             value={values.repeatPassword}
+                        />
+             {errors.passwordConfirmation && touched.passwordConfirmation && errors.passwordConfirmation}
+            <input
+             placeholder="Please enter your name"
+             type="name"
+             name="name"
+             onChange={handleChange}
+             onBlur={handleBlur}
+             value={values.name}
+                        />
+            {errors.name && touched.name && errors.name}
            <button type="submit" disabled={isSubmitting} >
              Submit
            </button>
@@ -226,4 +251,4 @@ const Signin = () => {
 }
 
 
-export default Signin
+export default SignUp
